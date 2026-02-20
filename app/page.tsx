@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { HeartHandshake, Users, Sparkles, Mail, MapPin } from "lucide-react";
 
 export default function Home() {
@@ -236,18 +237,36 @@ export default function Home() {
           <div className="rounded-3xl border bg-white p-8 shadow-sm">
             <h2 className="text-2xl font-bold tracking-tight">Adhérer</h2>
             <p className="mt-2 max-w-3xl text-zinc-700">
-              Formulaire simple pour rejoindre l’association. (On peut connecter
-              ça à Formspree / Google Forms ensuite.)
+              Remplissez ce formulaire pour rejoindre l’association. Votre
+              demande sera transmise par email à l’équipe.
             </p>
 
-            <form className="mt-6 grid gap-4 md:grid-cols-2">
-              <Input label="Nom complet" placeholder="Votre nom" />
-              <Input label="Email" placeholder="vous@email.com" type="email" />
-              <Input label="Téléphone" placeholder="+33 ..." />
-              <Input label="Ville" placeholder="Votre ville" />
+            <form
+              action="https://formspree.io/f/xreaakka"
+              method="POST"
+              className="mt-6 grid gap-4 md:grid-cols-2"
+            >
+              {/* Optional email subject */}
+              <input
+                type="hidden"
+                name="_subject"
+                value="Nouvelle demande d’adhésion — LES AMAZONES"
+              />
+
+              <Input label="Nom complet" placeholder="Votre nom" name="fullName" />
+              <Input
+                label="Email"
+                placeholder="vous@email.com"
+                type="email"
+                name="email"
+              />
+              <Input label="Téléphone" placeholder="+33 ..." name="phone" />
+              <Input label="Ville" placeholder="Votre ville" name="city" />
+
               <div className="md:col-span-2">
                 <label className="text-sm font-medium">Message</label>
                 <textarea
+                  name="message"
                   className="mt-1 w-full rounded-xl border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-orange-600"
                   rows={4}
                   placeholder="Pourquoi souhaitez-vous adhérer ?"
@@ -256,15 +275,15 @@ export default function Home() {
 
               <div className="md:col-span-2">
                 <button
-                  type="button"
+                  type="submit"
                   className="w-full rounded-full bg-orange-600 px-6 py-3 text-sm font-semibold text-white hover:bg-orange-700"
                 >
                   Envoyer la demande
                 </button>
                 <p className="mt-2 text-xs text-zinc-500">
-                  Note: cette version “MVP” n’envoie pas encore d’email. Je te
-                  branche l’envoi en 5 minutes dès que tu confirmes l’adresse de
-                  réception.
+                  Après envoi, vous recevrez une confirmation (selon la
+                  configuration Formspree). Si c’est la première fois, Formspree
+                  peut demander une validation de l’adresse email de réception.
                 </p>
               </div>
             </form>
@@ -292,8 +311,8 @@ export default function Home() {
                 Adresse
               </div>
               <p className="mt-2 text-sm text-zinc-700">
-                Le siège social est actuellement indiqué comme [adresse] dans
-                vos documents. Remplace par l’adresse exacte.
+                Le siège social est indiqué comme [adresse] dans vos documents.
+                Remplace par l’adresse exacte.
               </p>
 
               <div className="mt-6">
@@ -311,12 +330,11 @@ export default function Home() {
               <ul className="mt-3 space-y-2 text-sm text-zinc-700">
                 <li>• Ajouter les textes définitifs (mission, activités).</li>
                 <li>• Ajouter des photos réelles (évènements, ateliers).</li>
-                <li>• Connecter le formulaire (Formspree / Resend).</li>
                 <li>• Ajouter page “Don” (HelloAsso/Stripe).</li>
               </ul>
 
               <p className="mt-4 text-xs text-zinc-500">
-                Quand tu pushes sur GitHub, Vercel redéploie automatiquement.
+                À chaque push sur GitHub, Vercel redéploie automatiquement.
               </p>
             </div>
           </div>
@@ -345,7 +363,7 @@ function Card({
   title,
   text,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   text: string;
 }) {
@@ -388,19 +406,23 @@ function TeamCard({ name, role }: { name: string; role: string }) {
 function Input({
   label,
   placeholder,
+  name,
   type = "text",
 }: {
   label: string;
   placeholder: string;
+  name: string;
   type?: string;
 }) {
   return (
     <div>
       <label className="text-sm font-medium">{label}</label>
       <input
+        name={name}
         type={type}
         placeholder={placeholder}
         className="mt-1 w-full rounded-xl border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-orange-600"
+        required={name === "email" || name === "fullName"}
       />
     </div>
   );
